@@ -161,6 +161,26 @@ footer {
   list-style-type: disc;
 }
 
+/* Masquer les puces */
+.participants-list.no-bullets {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* Icône de suppression */
+.delete-participant {
+  color: #c00;
+  cursor: pointer;
+  margin-left: 0.5em;
+  font-size: 1.1em;
+  vertical-align: middle;
+  transition: color 0.2s;
+}
+.delete-participant:hover {
+  color: #f33;
+}
+}
+
 .participants-list li {
   margin-bottom: 4px;
   display: flex;

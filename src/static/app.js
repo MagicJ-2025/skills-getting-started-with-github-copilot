@@ -26,11 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
           participantsHTML = `
             <div class="participants-section">
               <strong>Participants&nbsp;:</strong>
-              <ul class="participants-list">
+              <ul class="participants-list no-bullets">
                 ${details.participants
                   .map(
                     (p) =>
-                      `<li><span class="participant-avatar">${p[0].toUpperCase()}</span> ${p}</li>`
+                      `<li><span class="participant-avatar">${p[0].toUpperCase()}</span> ${p} <span class="delete-participant" title="Désinscrire" data-activity="${encodeURIComponent(name)}" data-email="${encodeURIComponent(p)}">&#128465;</span></li>`
                   )
                   .join("")}
               </ul>
@@ -54,6 +54,36 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         activitiesList.appendChild(activityCard);
+
+      // Ajouter gestionnaire pour suppression participant
+      activityCard.querySelectorAll(".delete-participant").forEach((icon) => {
+        icon.addEventListener("click", async (e) => {
+          const activity = icon.getAttribute("data-activity");
+          const email = icon.getAttribute("data-email");
+          if (confirm(`Désinscrire ${decodeURIComponent(email)} de ${decodeURIComponent(activity)} ?`)) {
+            try {
+              const response = await fetch(`/activities/${activity}/unregister?email=${email}`, {
+                method: "DELETE"
+              });
+              const result = await response.json();
+              if (response.ok) {
+                fetchActivities();
+                messageDiv.textContent = result.message;
+                messageDiv.className = "success";
+              } else {
+                messageDiv.textContent = result.detail || "Erreur lors de la désinscription";
+                messageDiv.className = "error";
+              }
+              messageDiv.classList.remove("hidden");
+              setTimeout(() => messageDiv.classList.add("hidden"), 5000);
+            } catch (err) {
+              messageDiv.textContent = "Erreur réseau lors de la désinscription.";
+              messageDiv.className = "error";
+              messageDiv.classList.remove("hidden");
+            }
+          }
+        });
+      });
 
         // Add option to select dropdown
         const option = document.createElement("option");
